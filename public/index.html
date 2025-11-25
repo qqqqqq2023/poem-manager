@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>诗歌管理器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            cursor: default;
+        }
+        
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 80vh;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .middle-panel {
+            flex: 2;
+            min-width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .right-panel {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .poem-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .poem-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .poem-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .poem-title {
+            cursor: pointer;
+            flex: 1;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        .random-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .random-controls input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 60px;
+        }
+        
+        .random-controls button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .random-controls button:hover {
+            background: #218838;
+        }
+        
+        .poem-display {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            cursor: pointer;
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .poem-display:hover {
+            background: #e9ecef;
+        }
+        
+        .poem-title-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #495057;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .poem-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #333;
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .click-hint {
+            margin-top: 20px;
+            color: #6c757d;
+            font-style: italic;
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .poem-navigation {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .nav-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .nav-btn:hover:not(:disabled) {
+            background: #0056b3;
+        }
+        
+        .nav-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .add-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+        
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        
+        .add-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        
+        .add-btn:hover {
+            background: #0056b3;
+        }
+        
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #6c757d;
+            padding: 40px 20px;
+        }
+        
+        .current-poem {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .title-only .poem-content {
+            display: none;
+        }
+        
+        .title-only .click-hint {
+            display: block;
+        }
+        
+        .full-content .poem-content {
+            display: block;
+        }
+        
+        .full-content .click-hint {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧栏 -->
+        <div class="panel left-panel">
+            <h2>诗歌列表</h2>
+            <div class="poem-list" id="poemList">
+                <div class="empty-state">暂无诗歌</div>
+            </div>
+        </div>
+        
+        <!-- 中间区域 -->
+        <div class="panel middle-panel">
+            <h2>诗歌浏览</h2>
+            <div class="random-controls">
+                <span>随机显示数量:</span>
+                <input type="number" id="randomCount" min="1" max="10" value="3">
+                <button onclick="loadRandomPoems()">随机显示</button>
+            </div>
+            <div class="poem-display title-only" id="poemDisplay" onclick="togglePoemContent()">
+                <div class="empty-state">请选择诗歌或点击随机显示</div>
+            </div>
+            <div class="poem-navigation">
+                <button class="nav-btn" id="prevBtn" onclick="navigatePoem(-1)" disabled>← 上一首</button>
+                <button class="nav-btn" id="nextBtn" onclick="navigatePoem(1)" disabled>下一首 →</button>
+            </div>
+        </div>
+        
+        <!-- 右侧栏 -->
+        <div class="panel right-panel">
+            <h2>添加诗歌</h2>
+            <form class="add-form" id="addForm">
+                <div class="form-group">
+                    <label for="title">标题:</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="content">内容:</label>
+                    <textarea id="content" required></textarea>
+                </div>
+                <button type="submit" class="add-btn">添加诗歌</button>
+            </form>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        let allPoems = [];
+        let currentRandomPoems = [];
+        let currentPoemIndex = 0;
+        let settings = { random_count: 3 };
+        let currentPoem = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPoemList();
+            loadSettings();
+            document.getElementById('addForm').addEventListener('submit', addPoem);
+        });
+
+        // 加载诗歌列表
+        async function loadPoemList() {
+            try {
+                const response = await fetch('/api/poems');
+                allPoems = await response.json();
+                displayPoemList();
+            } catch (error) {
+                console.error('加载诗歌列表失败:', error);
+            }
+        }
+
+        // 显示诗歌列表
+        function displayPoemList() {
+            const poemList = document.getElementById('poemList');
+            
+            if (allPoems.length === 0) {
+                poemList.innerHTML = '<div class="empty-state">暂无诗歌</div>';
+                return;
+            }
+
+            poemList.innerHTML = allPoems.map(poem => `
+                <div class="poem-item">
+                    <span class="poem-title" onclick="viewPoem('${poem}')">${poem}</span>
+                    <button class="delete-btn" onclick="deletePoem('${poem}')">删除</button>
+                </div>
+            `).join('');
+        }
+
+        // 查看诗歌
+        async function viewPoem(title) {
+            try {
+                const response = await fetch(`/api/poem/${encodeURIComponent(title)}`);
+                const poem = await response.json();
+                
+                if (!poem.error) {
+                    currentPoem = poem;
+                    displayPoemTitleOnly(poem);
+                    // 清空随机诗歌状态
+                    currentRandomPoems = [];
+                    currentPoemIndex = 0;
+                    updateNavigationButtons();
+                }
+            } catch (error) {
+                console.error('加载诗歌失败:', error);
+            }
+        }
+
+        // 删除诗歌
+        async function deletePoem(title) {
+            if (!confirm(`确定要删除"${title}"吗？`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/poem/${encodeURIComponent(title)}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (result.message) {
+                    showMessage(result.message, 'success');
+                    loadPoemList();
+                    // 如果删除的是当前显示的诗歌，清空显示区域
+                    document.getElementById('poemDisplay').innerHTML = '<div class="empty-state">请选择诗歌或点击随机显示</div>';
+                    document.getElementById('poemDisplay').className = 'poem-display title-only';
+                    currentPoem = null;
+                } else {
+                    showMessage(result.error, 'error');
+                }
+            } catch (error) {
+                console.error('删除诗歌失败:', error);
+                showMessage('删除失败', 'error');
+            }
+        }
+
+        // 加载随机诗歌
+        async function loadRandomPoems() {
+            const count = document.getElementById('randomCount').value;
+            
+            try {
+                const response = await fetch(`/api/random?count=${count}`);
+                currentRandomPoems = await response.json();
+                currentPoemIndex = 0;
+                
+                if (currentRandomPoems.length > 0) {
+                    currentPoem = currentRandomPoems[0];
+                    displayPoemTitleOnly(currentRandomPoems[0], true);
+                }
+                updateNavigationButtons();
+            } catch (error) {
+                console.error('加载随机诗歌失败:', error);
+            }
+        }
+
+        // 导航诗歌
+        function navigatePoem(direction) {
+            if (currentRandomPoems.length === 0) return;
+            
+            currentPoemIndex += direction;
+            if (currentPoemIndex < 0) currentPoemIndex = currentRandomPoems.length - 1;
+            if (currentPoemIndex >= currentRandomPoems.length) currentPoemIndex = 0;
+            
+            currentPoem = currentRandomPoems[currentPoemIndex];
+            displayPoemTitleOnly(currentRandomPoems[currentPoemIndex], true);
+            updateNavigationButtons();
+        }
+
+        // 更新导航按钮状态
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const hasRandomPoems = currentRandomPoems.length > 0;
+            
+            prevBtn.disabled = !hasRandomPoems;
+            nextBtn.disabled = !hasRandomPoems;
+        }
+
+        // 显示诗歌标题（不显示内容）
+        function displayPoemTitleOnly(poem, showNavigation = false) {
+            const poemDisplay = document.getElementById('poemDisplay');
+            const navigationInfo = showNavigation ? 
+                `<div class="current-poem">${currentPoemIndex + 1} / ${currentRandomPoems.length}</div>` : '';
+            
+            poemDisplay.innerHTML = `
+                ${navigationInfo}
+                <div class="poem-title-display">${poem.title}</div>
+                <div class="poem-content">${poem.content}</div>
+                <div class="click-hint">点击显示完整内容</div>
+            `;
+            poemDisplay.className = 'poem-display title-only';
+        }
+
+        // 显示完整诗歌内容
+        function displayFullPoem(poem, showNavigation = false) {
+            const poemDisplay = document.getElementById('poemDisplay');
+            const navigationInfo = showNavigation ? 
+                `<div class="current-poem">${currentPoemIndex + 1} / ${currentRandomPoems.length}</div>` : '';
+            
+            poemDisplay.innerHTML = `
+                ${navigationInfo}
+                <div class="poem-title-display">${poem.title}</div>
+                <div class="poem-content">${poem.content}</div>
+                <div class="click-hint">点击显示完整内容</div>
+            `;
+            poemDisplay.className = 'poem-display full-content';
+        }
+
+        // 切换诗歌内容显示
+        function togglePoemContent() {
+            const poemDisplay = document.getElementById('poemDisplay');
+            
+            // 如果没有诗歌内容，不执行任何操作
+            if (!currentPoem) return;
+            
+            if (poemDisplay.classList.contains('title-only')) {
+                displayFullPoem(currentPoem, currentRandomPoems.length > 0);
+            } else {
+                displayPoemTitleOnly(currentPoem, currentRandomPoems.length > 0);
+            }
+        }
+
+        // 添加诗歌
+        async function addPoem(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            
+            if (!title || !content) {
+                showMessage('标题和内容不能为空', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/poem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+                const result = await response.json();
+                
+                if (result.message) {
+                    showMessage(result.message, 'success');
+                    document.getElementById('addForm').reset();
+                    loadPoemList();
+                } else {
+                    showMessage(result.error, 'error');
+                }
+            } catch (error) {
+                console.error('添加诗歌失败:', error);
+                showMessage('添加失败', 'error');
+            }
+        }
+
+        // 加载设置
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                settings = await response.json();
+                document.getElementById('randomCount').value = settings.random_count;
+            } catch (error) {
+                console.error('加载设置失败:', error);
+            }
+        }
+
+        // 显示消息
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

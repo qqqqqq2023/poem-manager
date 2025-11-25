@@ -15,52 +15,52 @@
             font-family: 'Microsoft YaHei', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
-            cursor: default;
+            padding: 15px;
         }
         
         .container {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            gap: 15px;
             max-width: 1400px;
             margin: 0 auto;
-            min-height: 80vh;
         }
         
         .panel {
             background: white;
             border-radius: 15px;
-            padding: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
         .left-panel {
-            flex: 1;
-            min-width: 250px;
+            order: 1;
+            padding: 20px;
+            position: relative;
         }
         
         .middle-panel {
-            flex: 2;
-            min-width: 400px;
+            order: 2;
             display: flex;
             flex-direction: column;
+            padding: 20px;
         }
         
         .right-panel {
-            flex: 1;
-            min-width: 300px;
+            order: 3;
+            padding: 20px;
         }
         
         h2 {
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: center;
             border-bottom: 2px solid #667eea;
             padding-bottom: 10px;
+            font-size: 1.4rem;
         }
         
         .poem-list {
-            max-height: 500px;
+            max-height: 300px;
             overflow-y: auto;
         }
         
@@ -78,7 +78,6 @@
         
         .poem-item:hover {
             background: #e9ecef;
-            transform: translateX(5px);
         }
         
         .poem-title {
@@ -86,16 +85,18 @@
             flex: 1;
             font-weight: bold;
             color: #495057;
+            font-size: 1rem;
         }
         
         .delete-btn {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s;
+            font-size: 0.9rem;
         }
         
         .delete-btn:hover {
@@ -104,25 +105,33 @@
         
         .random-controls {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             align-items: center;
+            justify-content: center;
+        }
+        
+        .random-controls span {
+            font-size: 1rem;
         }
         
         .random-controls input {
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             width: 60px;
+            font-size: 1rem;
         }
         
         .random-controls button {
             background: #28a745;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 10px 15px;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 1rem;
         }
         
         .random-controls button:hover {
@@ -134,7 +143,7 @@
             background: #f8f9fa;
             border-radius: 10px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             overflow-y: auto;
             cursor: pointer;
             position: relative;
@@ -151,44 +160,49 @@
         }
         
         .poem-title-display {
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: bold;
             color: #495057;
             text-align: center;
             margin-bottom: 15px;
+            word-break: break-word;
         }
         
         .poem-content {
             white-space: pre-wrap;
             line-height: 1.6;
             color: #333;
-            font-size: 16px;
+            font-size: 1rem;
             text-align: center;
             width: 100%;
+            word-break: break-word;
         }
         
         .click-hint {
-            margin-top: 20px;
+            margin-top: 15px;
             color: #6c757d;
             font-style: italic;
             text-align: center;
-            font-size: 14px;
+            font-size: 0.9rem;
             opacity: 0.7;
         }
         
         .poem-navigation {
             display: flex;
             justify-content: space-between;
+            gap: 10px;
         }
         
         .nav-btn {
             background: #007bff;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 15px;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s;
+            flex: 1;
+            font-size: 1rem;
         }
         
         .nav-btn:hover:not(:disabled) {
@@ -215,14 +229,16 @@
         .form-group label {
             font-weight: bold;
             color: #495057;
+            font-size: 1rem;
         }
         
         .form-group input,
         .form-group textarea {
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-family: inherit;
+            font-size: 1rem;
         }
         
         .form-group textarea {
@@ -234,10 +250,10 @@
             background: #007bff;
             color: white;
             border: none;
-            padding: 12px;
+            padding: 15px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1.1rem;
             transition: background 0.3s;
         }
         
@@ -246,10 +262,11 @@
         }
         
         .message {
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
             margin-top: 10px;
             text-align: center;
+            font-size: 1rem;
         }
         
         .success {
@@ -268,13 +285,15 @@
             text-align: center;
             color: #6c757d;
             padding: 40px 20px;
+            font-size: 1rem;
         }
         
         .current-poem {
-            font-size: 18px;
+            font-size: 1rem;
             font-weight: bold;
             margin-bottom: 10px;
             color: #495057;
+            text-align: center;
         }
         
         .title-only .poem-content {
@@ -292,12 +311,217 @@
         .full-content .click-hint {
             display: none;
         }
+        
+        /* 移动端侧边栏样式 */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            z-index: 1000;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+        }
+        
+        /* 平板和桌面样式 */
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                min-height: 80vh;
+            }
+            
+            .left-panel {
+                flex: 1;
+                min-width: 250px;
+                order: 1;
+            }
+            
+            .middle-panel {
+                flex: 2;
+                min-width: 400px;
+                order: 2;
+            }
+            
+            .right-panel {
+                flex: 1;
+                min-width: 300px;
+                order: 3;
+            }
+            
+            .poem-list {
+                max-height: 500px;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .poem-title-display {
+                font-size: 1.8rem;
+            }
+            
+            .random-controls {
+                justify-content: flex-start;
+            }
+            
+            .poem-item:hover {
+                transform: translateX(5px);
+            }
+        }
+        
+        /* 大屏幕桌面样式 */
+        @media (min-width: 1200px) {
+            body {
+                padding: 20px;
+            }
+            
+            .container {
+                gap: 20px;
+            }
+            
+            .poem-title-display {
+                font-size: 2rem;
+            }
+        }
+        
+        /* 移动端样式 */
+        @media (max-width: 767px) {
+            .sidebar-toggle {
+                display: block;
+            }
+            
+            .left-panel {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 85%;
+                height: 100%;
+                z-index: 999;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+                border-radius: 0;
+                padding-top: 60px;
+            }
+            
+            .left-panel.active {
+                left: 0;
+            }
+            
+            .right-panel {
+                display: none;
+            }
+            
+            .middle-panel {
+                width: 100%;
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
+            }
+            
+            .poem-list {
+                max-height: calc(100vh - 120px);
+            }
+            
+            .close-sidebar {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: #666;
+                cursor: pointer;
+            }
+        }
+        
+        /* 小屏幕手机优化 */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .panel {
+                padding: 15px;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+                margin-bottom: 12px;
+            }
+            
+            .poem-title-display {
+                font-size: 1.3rem;
+            }
+            
+            .random-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .random-controls > * {
+                text-align: center;
+            }
+            
+            .poem-navigation {
+                flex-direction: column;
+            }
+            
+            .poem-display {
+                min-height: 250px;
+                padding: 15px;
+            }
+            
+            .sidebar-toggle {
+                top: 15px;
+                left: 15px;
+                padding: 8px 12px;
+            }
+        }
+        
+        /* 防止文本选择（提升交互体验） */
+        .poem-display, .poem-title, .nav-btn, .delete-btn, .add-btn, .random-controls button {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        .poem-display:focus, .poem-title:focus, .nav-btn:focus, .delete-btn:focus, .add-btn:focus, .random-controls button:focus {
+            outline: none;
+        }
     </style>
 </head>
 <body>
+    <!-- 移动端侧边栏切换按钮 -->
+    <button class="sidebar-toggle" id="sidebarToggle">☰ 诗歌列表</button>
+    
+    <!-- 侧边栏遮罩层 -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
     <div class="container">
         <!-- 左侧栏 -->
-        <div class="panel left-panel">
+        <div class="panel left-panel" id="leftPanel">
+            <button class="close-sidebar" id="closeSidebar">×</button>
             <h2>诗歌列表</h2>
             <div class="poem-list" id="poemList">
                 <div class="empty-state">暂无诗歌</div>
@@ -321,7 +545,7 @@
             </div>
         </div>
         
-        <!-- 右侧栏 -->
+        <!-- 右侧栏（在桌面端显示） -->
         <div class="panel right-panel">
             <h2>添加诗歌</h2>
             <form class="add-form" id="addForm">
@@ -351,7 +575,37 @@
             loadPoemList();
             loadSettings();
             document.getElementById('addForm').addEventListener('submit', addPoem);
+            
+            // 侧边栏切换事件
+            document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+            document.getElementById('closeSidebar').addEventListener('click', closeSidebar);
+            document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+            
+            // 点击诗歌列表项后关闭侧边栏（移动端）
+            document.getElementById('poemList').addEventListener('click', function(e) {
+                if (e.target.classList.contains('poem-title') && window.innerWidth <= 767) {
+                    closeSidebar();
+                }
+            });
         });
+
+        // 切换侧边栏
+        function toggleSidebar() {
+            const leftPanel = document.getElementById('leftPanel');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            leftPanel.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // 关闭侧边栏
+        function closeSidebar() {
+            const leftPanel = document.getElementById('leftPanel');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            leftPanel.classList.remove('active');
+            overlay.classList.remove('active');
+        }
 
         // 加载诗歌列表
         async function loadPoemList() {
@@ -361,6 +615,7 @@
                 displayPoemList();
             } catch (error) {
                 console.error('加载诗歌列表失败:', error);
+                showMessage('加载诗歌列表失败，请检查网络连接', 'error');
             }
         }
 
@@ -375,8 +630,8 @@
 
             poemList.innerHTML = allPoems.map(poem => `
                 <div class="poem-item">
-                    <span class="poem-title" onclick="viewPoem('${poem}')">${poem}</span>
-                    <button class="delete-btn" onclick="deletePoem('${poem}')">删除</button>
+                    <span class="poem-title" onclick="viewPoem('${poem.replace(/'/g, "\\'")}')">${poem}</span>
+                    <button class="delete-btn" onclick="deletePoem('${poem.replace(/'/g, "\\'")}')">删除</button>
                 </div>
             `).join('');
         }
@@ -394,9 +649,12 @@
                     currentRandomPoems = [];
                     currentPoemIndex = 0;
                     updateNavigationButtons();
+                } else {
+                    showMessage(poem.error, 'error');
                 }
             } catch (error) {
                 console.error('加载诗歌失败:', error);
+                showMessage('加载诗歌失败，请检查网络连接', 'error');
             }
         }
 
@@ -416,15 +674,17 @@
                     showMessage(result.message, 'success');
                     loadPoemList();
                     // 如果删除的是当前显示的诗歌，清空显示区域
-                    document.getElementById('poemDisplay').innerHTML = '<div class="empty-state">请选择诗歌或点击随机显示</div>';
-                    document.getElementById('poemDisplay').className = 'poem-display title-only';
-                    currentPoem = null;
+                    if (currentPoem && currentPoem.title === title) {
+                        document.getElementById('poemDisplay').innerHTML = '<div class="empty-state">请选择诗歌或点击随机显示</div>';
+                        document.getElementById('poemDisplay').className = 'poem-display title-only';
+                        currentPoem = null;
+                    }
                 } else {
                     showMessage(result.error, 'error');
                 }
             } catch (error) {
                 console.error('删除诗歌失败:', error);
-                showMessage('删除失败', 'error');
+                showMessage('删除失败，请检查网络连接', 'error');
             }
         }
 
@@ -440,10 +700,14 @@
                 if (currentRandomPoems.length > 0) {
                     currentPoem = currentRandomPoems[0];
                     displayPoemTitleOnly(currentRandomPoems[0], true);
+                } else {
+                    document.getElementById('poemDisplay').innerHTML = '<div class="empty-state">暂无诗歌，请先添加诗歌</div>';
+                    document.getElementById('poemDisplay').className = 'poem-display title-only';
                 }
                 updateNavigationButtons();
             } catch (error) {
                 console.error('加载随机诗歌失败:', error);
+                showMessage('加载随机诗歌失败，请检查网络连接', 'error');
             }
         }
 
@@ -545,7 +809,7 @@
                 }
             } catch (error) {
                 console.error('添加诗歌失败:', error);
-                showMessage('添加失败', 'error');
+                showMessage('添加失败，请检查网络连接', 'error');
             }
         }
 
@@ -568,6 +832,16 @@
                 messageDiv.innerHTML = '';
             }, 3000);
         }
+
+        // 处理触摸事件，防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
     </script>
 </body>
 </html>

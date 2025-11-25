@@ -1,0 +1,12 @@
+version: '3.3'
+# poem-manager 部署
+services:
+  komga:
+    container_name: poem-manager
+    image: poem-manager
+    volumes:
+      # 配置
+      - "/mnt/poem/db.sqlite:/app/data/db.sqlite"
+    ports:
+      - 3203:5000
+    restart: unless-stopped

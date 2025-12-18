@@ -20,12 +20,14 @@ def init_database():
     """初始化数据库表"""
     conn = get_db_connection()
     
-    # 创建诗歌表
+    # 创建诗歌表（添加weight字段）
     conn.execute('''
         CREATE TABLE IF NOT EXISTS poems (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT UNIQUE NOT NULL,
             content TEXT NOT NULL,
+            is_study TEXT NOT NULL DEFAULT '0',
+            weight INTEGER NOT NULL DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
@@ -64,6 +66,7 @@ def init_database():
     conn.commit()
     conn.close()
 
+
 @app.route('/')
 def index():
     return send_from_directory('public', 'index.html')
@@ -77,11 +80,15 @@ def get_poems():
     """获取所有诗歌列表"""
     conn = get_db_connection()
     poems = conn.execute(
-        'SELECT id, title FROM poems ORDER BY created_at DESC'
+        'SELECT id, title, is_study FROM poems ORDER BY created_at DESC'
     ).fetchall()
     conn.close()
     
-    return jsonify([poem['title'] for poem in poems])
+    # 修改这里：返回包含标题和学习状态的字典列表
+    return jsonify([{
+        'title': poem['title'],
+        'is_study': poem['is_study'] == '1'  # 转换为布尔值，便于前端使用
+    } for poem in poems])
 
 @app.route('/api/poem/<title>', methods=['GET'])
 def get_poem(title):
@@ -101,69 +108,85 @@ def get_poem(title):
     else:
         return jsonify({"error": "诗歌未找到"}), 404
 
-@app.route('/api/poem', methods=['POST'])
-def add_poem():
-    """添加新诗歌"""
-    data = request.json
-    title = data.get('title', '').strip()
-    content = data.get('content', '').strip()
-    
-    if not title or not content:
-        return jsonify({"error": "标题和内容不能为空"}), 400
-    
-    conn = get_db_connection()
-    
-    try:
-        conn.execute(
-            'INSERT INTO poems (title, content) VALUES (?, ?)',
-            (title, content)
-        )
-        conn.commit()
-        conn.close()
-        return jsonify({"message": "诗歌添加成功"})
-    except sqlite3.IntegrityError:
-        conn.close()
-        return jsonify({"error": "标题已存在"}), 400
-    except Exception as e:
-        conn.close()
-        return jsonify({"error": "添加失败"}), 500
-
-@app.route('/api/poem/<title>', methods=['DELETE'])
-def delete_poem(title):
-    """删除诗歌"""
-    conn = get_db_connection()
-    result = conn.execute(
-        'DELETE FROM poems WHERE title = ?', 
-        (title,)
-    )
-    conn.commit()
-    conn.close()
-    
-    if result.rowcount > 0:
-        return jsonify({"message": "诗歌删除成功"})
-    else:
-        return jsonify({"error": "诗歌未找到"}), 404
 
 @app.route('/api/random', methods=['GET'])
 def get_random_poems():
-    """获取随机诗歌"""
+    """获取随机诗歌（只返回已学习的诗歌，权重低的诗歌有更高概率）"""
     count = request.args.get('count', 3, type=int)
     conn = get_db_connection()
     
-    # 获取所有诗歌
+    # 只获取已学习的诗歌（is_study = '1'）
     all_poems = conn.execute(
-        'SELECT title, content FROM poems'
+        "SELECT title, content, weight FROM poems WHERE is_study = '1'"
     ).fetchall()
-    conn.close()
     
     if not all_poems:
+        conn.close()
         return jsonify([])
     
-    # 随机选择指定数量的诗歌
+    # 限制数量不超过总诗歌数
     count = min(count, len(all_poems))
-    random_poems = random.sample(all_poems, count)
     
-    # 转换为字典格式
+    # 计算选择概率：权重越低，概率越高
+    # 使用公式：选择概率 = 1 / (weight + 1)
+    # 这样权重为0的诗歌概率为1，权重为1的诗歌概率为1/2，以此类推
+    poems_with_prob = []
+    for poem in all_poems:
+        weight = poem['weight']
+        # 计算选择概率（权重越低，概率越高）
+        probability = 1.0 / (weight + 1.0)
+        poems_with_prob.append({
+            'title': poem['title'],
+            'content': poem['content'],
+            'weight': weight,
+            'probability': probability
+        })
+    
+    # 计算总概率
+    total_probability = sum(p['probability'] for p in poems_with_prob)
+    
+    # 如果总概率为0（不可能发生），则使用均匀分布
+    if total_probability == 0:
+        random_poems = random.sample([p for p in poems_with_prob], count)
+    else:
+        # 标准化概率
+        normalized_probabilities = [p['probability'] / total_probability for p in poems_with_prob]
+        
+        # 使用加权随机选择
+        random_poems = []
+        available_poems = poems_with_prob.copy()
+        available_probs = normalized_probabilities.copy()
+        
+        for _ in range(count):
+            if not available_poems:
+                break
+                
+            # 使用random.choices进行加权随机选择
+            selected_idx = random.choices(range(len(available_poems)), weights=available_probs, k=1)[0]
+            selected_poem = available_poems[selected_idx]
+            random_poems.append(selected_poem)
+            
+            # 从可选列表中移除已选择的诗歌（避免重复）
+            del available_poems[selected_idx]
+            del available_probs[selected_idx]
+            
+            # 重新标准化剩余的概率
+            if available_probs:
+                total = sum(available_probs)
+                if total > 0:
+                    available_probs = [p / total for p in available_probs]
+    
+    # 更新被选中的诗歌的权重（weight+1）
+    for poem in random_poems:
+        conn.execute(
+            "UPDATE poems SET weight = weight + 1 WHERE title = ?",
+            (poem['title'],)
+        )
+    
+    conn.commit()
+    conn.close()
+    
+    # 转换为字典格式（只返回title和content）
     poems_list = [
         {
             'title': poem['title'],
@@ -173,6 +196,7 @@ def get_random_poems():
     ]
     
     return jsonify(poems_list)
+
 
 @app.route('/api/settings', methods=['GET'])
 def get_settings():
@@ -193,25 +217,40 @@ def get_settings():
     
     return jsonify(settings)
 
-@app.route('/api/settings', methods=['POST'])
-def update_settings():
-    """更新设置"""
-    data = request.json
-    
+@app.route('/api/poem/<title>/study', methods=['PUT'])
+def mark_as_studied(title):
+    """将诗歌标记为已学习（is_study=1）"""
     conn = get_db_connection()
     
     try:
-        for key, value in data.items():
-            conn.execute(
-                'INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)',
-                (key, str(value))
-            )
+        # 检查诗歌是否存在
+        poem = conn.execute(
+            'SELECT title FROM poems WHERE title = ?', 
+            (title,)
+        ).fetchone()
+        
+        if not poem:
+            conn.close()
+            return jsonify({"error": "诗歌未找到"}), 404
+        
+        # 更新is_study字段为1
+        result = conn.execute(
+            'UPDATE poems SET is_study = ? WHERE title = ?', 
+            ("1", title)
+        )
         conn.commit()
         conn.close()
-        return jsonify({"message": "设置更新成功"})
+        
+        if result.rowcount > 0:
+            return jsonify({"message": f"诗歌《{title}》已标记为已学习"})
+        else:
+            return jsonify({"error": "更新失败"}), 500
+            
     except Exception as e:
         conn.close()
-        return jsonify({"error": "更新失败"}), 500
+        return jsonify({"error": "服务器内部错误"}), 500
+
+
 
 # 初始化数据库
 if not os.path.exists('data'):

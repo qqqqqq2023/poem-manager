@@ -45,11 +45,6 @@
             padding: 20px;
         }
         
-        .right-panel {
-            order: 3;
-            padding: 20px;
-        }
-        
         h2 {
             color: #333;
             margin-bottom: 15px;
@@ -76,8 +71,17 @@
             transition: all 0.3s ease;
         }
         
+        .poem-item.studied {
+            border-left-color: #28a745;
+            background: #f0fff4;
+        }
+        
         .poem-item:hover {
             background: #e9ecef;
+        }
+        
+        .poem-item.studied:hover {
+            background: #e6ffe6;
         }
         
         .poem-title {
@@ -88,19 +92,17 @@
             font-size: 1rem;
         }
         
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-size: 0.9rem;
+        .poem-item.studied .poem-title {
+            color: #28a745;
         }
         
-        .delete-btn:hover {
-            background: #c82333;
+        .studied-badge {
+            background: #28a745;
+            color: white;
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            margin-right: 10px;
         }
         
         .random-controls {
@@ -191,6 +193,43 @@
             display: flex;
             justify-content: space-between;
             gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .study-btn-container {
+            text-align: center;
+        }
+        
+        .study-btn {
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            max-width: 200px;
+        }
+        
+        .study-btn:hover:not(:disabled) {
+            background: #e0a800;
+        }
+        
+        .study-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .study-btn.studied {
+            background: #28a745;
+            color: white;
+        }
+        
+        .study-btn.studied:hover {
+            background: #218838;
         }
         
         .nav-btn {
@@ -212,73 +251,6 @@
         .nav-btn:disabled {
             background: #6c757d;
             cursor: not-allowed;
-        }
-        
-        .add-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .form-group label {
-            font-weight: bold;
-            color: #495057;
-            font-size: 1rem;
-        }
-        
-        .form-group input,
-        .form-group textarea {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-family: inherit;
-            font-size: 1rem;
-        }
-        
-        .form-group textarea {
-            height: 150px;
-            resize: vertical;
-        }
-        
-        .add-btn {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: background 0.3s;
-        }
-        
-        .add-btn:hover {
-            background: #0056b3;
-        }
-        
-        .message {
-            padding: 12px;
-            border-radius: 5px;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 1rem;
-        }
-        
-        .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
         }
         
         .empty-state {
@@ -359,12 +331,6 @@
                 order: 2;
             }
             
-            .right-panel {
-                flex: 1;
-                min-width: 300px;
-                order: 3;
-            }
-            
             .poem-list {
                 max-height: 500px;
             }
@@ -422,10 +388,6 @@
             
             .left-panel.active {
                 left: 0;
-            }
-            
-            .right-panel {
-                display: none;
             }
             
             .middle-panel {
@@ -497,7 +459,7 @@
         }
         
         /* 防止文本选择（提升交互体验） */
-        .poem-display, .poem-title, .nav-btn, .delete-btn, .add-btn, .random-controls button {
+        .poem-display, .poem-title, .nav-btn, .study-btn, .random-controls button {
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -506,7 +468,7 @@
             user-select: none;
         }
         
-        .poem-display:focus, .poem-title:focus, .nav-btn:focus, .delete-btn:focus, .add-btn:focus, .random-controls button:focus {
+        .poem-display:focus, .poem-title:focus, .nav-btn:focus, .study-btn:focus, .random-controls button:focus {
             outline: none;
         }
     </style>
@@ -543,23 +505,9 @@
                 <button class="nav-btn" id="prevBtn" onclick="navigatePoem(-1)" disabled>← 上一首</button>
                 <button class="nav-btn" id="nextBtn" onclick="navigatePoem(1)" disabled>下一首 →</button>
             </div>
-        </div>
-        
-        <!-- 右侧栏（在桌面端显示） -->
-        <div class="panel right-panel">
-            <h2>添加诗歌</h2>
-            <form class="add-form" id="addForm">
-                <div class="form-group">
-                    <label for="title">标题:</label>
-                    <input type="text" id="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="content">内容:</label>
-                    <textarea id="content" required></textarea>
-                </div>
-                <button type="submit" class="add-btn">添加诗歌</button>
-            </form>
-            <div id="message"></div>
+            <div class="study-btn-container">
+                <button class="study-btn" id="studyBtn" onclick="markAsStudied()" disabled>标记为已学习</button>
+            </div>
         </div>
     </div>
 
@@ -569,12 +517,12 @@
         let currentPoemIndex = 0;
         let settings = { random_count: 3 };
         let currentPoem = null;
+        let currentPoemData = null;
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             loadPoemList();
             loadSettings();
-            document.getElementById('addForm').addEventListener('submit', addPoem);
             
             // 侧边栏切换事件
             document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
@@ -628,12 +576,17 @@
                 return;
             }
 
-            poemList.innerHTML = allPoems.map(poem => `
-                <div class="poem-item">
-                    <span class="poem-title" onclick="viewPoem('${poem.replace(/'/g, "\\'")}')">${poem}</span>
-                    <button class="delete-btn" onclick="deletePoem('${poem.replace(/'/g, "\\'")}')">删除</button>
+            poemList.innerHTML = allPoems.map(poem => {
+                const isStudied = poem.is_study;
+                const className = isStudied ? 'poem-item studied' : 'poem-item';
+                const badge = isStudied ? '<span class="studied-badge">已学</span>' : '';
+                
+                return `
+                <div class="${className}">
+                    ${badge}
+                    <span class="poem-title" onclick="viewPoem('${poem.title.replace(/'/g, "\\'")}')">${poem.title}</span>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         // 查看诗歌
@@ -644,11 +597,13 @@
                 
                 if (!poem.error) {
                     currentPoem = poem;
+                    currentPoemData = findPoemData(title);
                     displayPoemTitleOnly(poem);
                     // 清空随机诗歌状态
                     currentRandomPoems = [];
                     currentPoemIndex = 0;
                     updateNavigationButtons();
+                    updateStudyButton();
                 } else {
                     showMessage(poem.error, 'error');
                 }
@@ -658,33 +613,40 @@
             }
         }
 
-        // 删除诗歌
-        async function deletePoem(title) {
-            if (!confirm(`确定要删除"${title}"吗？`)) {
+        // 从allPoems中查找诗歌数据
+        function findPoemData(title) {
+            return allPoems.find(poem => poem.title === title);
+        }
+
+        // 标记为已学习
+        async function markAsStudied() {
+            if (!currentPoem) {
+                showMessage('请先选择一首诗歌', 'error');
                 return;
             }
 
             try {
-                const response = await fetch(`/api/poem/${encodeURIComponent(title)}`, {
-                    method: 'DELETE'
+                const response = await fetch(`/api/poem/${encodeURIComponent(currentPoem.title)}/study`, {
+                    method: 'PUT'
                 });
                 const result = await response.json();
                 
                 if (result.message) {
                     showMessage(result.message, 'success');
-                    loadPoemList();
-                    // 如果删除的是当前显示的诗歌，清空显示区域
-                    if (currentPoem && currentPoem.title === title) {
-                        document.getElementById('poemDisplay').innerHTML = '<div class="empty-state">请选择诗歌或点击随机显示</div>';
-                        document.getElementById('poemDisplay').className = 'poem-display title-only';
-                        currentPoem = null;
+                    // 更新本地数据
+                    const poemIndex = allPoems.findIndex(p => p.title === currentPoem.title);
+                    if (poemIndex !== -1) {
+                        allPoems[poemIndex].is_study = true;
                     }
+                    // 更新显示
+                    displayPoemList();
+                    updateStudyButton();
                 } else {
                     showMessage(result.error, 'error');
                 }
             } catch (error) {
-                console.error('删除诗歌失败:', error);
-                showMessage('删除失败，请检查网络连接', 'error');
+                console.error('标记为已学习失败:', error);
+                showMessage('标记失败，请检查网络连接', 'error');
             }
         }
 
@@ -699,12 +661,16 @@
                 
                 if (currentRandomPoems.length > 0) {
                     currentPoem = currentRandomPoems[0];
+                    currentPoemData = findPoemData(currentPoem.title);
                     displayPoemTitleOnly(currentRandomPoems[0], true);
                 } else {
                     document.getElementById('poemDisplay').innerHTML = '<div class="empty-state">暂无诗歌，请先添加诗歌</div>';
                     document.getElementById('poemDisplay').className = 'poem-display title-only';
+                    currentPoem = null;
+                    currentPoemData = null;
                 }
                 updateNavigationButtons();
+                updateStudyButton();
             } catch (error) {
                 console.error('加载随机诗歌失败:', error);
                 showMessage('加载随机诗歌失败，请检查网络连接', 'error');
@@ -720,8 +686,10 @@
             if (currentPoemIndex >= currentRandomPoems.length) currentPoemIndex = 0;
             
             currentPoem = currentRandomPoems[currentPoemIndex];
+            currentPoemData = findPoemData(currentPoem.title);
             displayPoemTitleOnly(currentRandomPoems[currentPoemIndex], true);
             updateNavigationButtons();
+            updateStudyButton();
         }
 
         // 更新导航按钮状态
@@ -732,6 +700,27 @@
             
             prevBtn.disabled = !hasRandomPoems;
             nextBtn.disabled = !hasRandomPoems;
+        }
+
+        // 更新学习按钮状态
+        function updateStudyButton() {
+            const studyBtn = document.getElementById('studyBtn');
+            
+            if (!currentPoem) {
+                studyBtn.disabled = true;
+                studyBtn.textContent = '标记为已学习';
+                studyBtn.classList.remove('studied');
+                return;
+            }
+            
+            studyBtn.disabled = false;
+            if (currentPoemData && currentPoemData.is_study) {
+                studyBtn.textContent = '已学习';
+                studyBtn.classList.add('studied');
+            } else {
+                studyBtn.textContent = '标记为已学习';
+                studyBtn.classList.remove('studied');
+            }
         }
 
         // 显示诗歌标题（不显示内容）
@@ -778,41 +767,6 @@
             }
         }
 
-        // 添加诗歌
-        async function addPoem(event) {
-            event.preventDefault();
-            
-            const title = document.getElementById('title').value.trim();
-            const content = document.getElementById('content').value.trim();
-            
-            if (!title || !content) {
-                showMessage('标题和内容不能为空', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/poem', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ title, content })
-                });
-                const result = await response.json();
-                
-                if (result.message) {
-                    showMessage(result.message, 'success');
-                    document.getElementById('addForm').reset();
-                    loadPoemList();
-                } else {
-                    showMessage(result.error, 'error');
-                }
-            } catch (error) {
-                console.error('添加诗歌失败:', error);
-                showMessage('添加失败，请检查网络连接', 'error');
-            }
-        }
-
         // 加载设置
         async function loadSettings() {
             try {
@@ -826,12 +780,55 @@
 
         // 显示消息
         function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            // 创建一个临时的消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 5px;
+                z-index: 1001;
+                animation: fadeIn 0.3s;
+                font-size: 0.9rem;
+            `;
+            
+            if (type === 'success') {
+                messageDiv.style.background = '#d4edda';
+                messageDiv.style.color = '#155724';
+                messageDiv.style.border = '1px solid #c3e6cb';
+            } else if (type === 'error') {
+                messageDiv.style.background = '#f8d7da';
+                messageDiv.style.color = '#721c24';
+                messageDiv.style.border = '1px solid #f5c6cb';
+            }
+            
+            document.body.appendChild(messageDiv);
+            
             setTimeout(() => {
-                messageDiv.innerHTML = '';
+                messageDiv.style.animation = 'fadeOut 0.3s';
+                setTimeout(() => {
+                    document.body.removeChild(messageDiv);
+                }, 300);
             }, 3000);
         }
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-10px); }
+            }
+        `;
+        document.head.appendChild(style);
 
         // 处理触摸事件，防止双击缩放
         let lastTouchEnd = 0;
